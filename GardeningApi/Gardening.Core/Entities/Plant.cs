@@ -1,6 +1,6 @@
 ﻿namespace Gardening.Core.Entities
 {
-    public class Plant
+    public record Plant
     {
         public int Id { get; set; }
         public string Name { get; set; }

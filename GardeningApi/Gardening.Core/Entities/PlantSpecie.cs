@@ -2,7 +2,7 @@
 
 namespace Gardening.Core.Entities
 {
-    public class PlantSpecie
+    public record PlantSpecie
     {
         public int Id { get; set; }
         public string Name { get; set; }

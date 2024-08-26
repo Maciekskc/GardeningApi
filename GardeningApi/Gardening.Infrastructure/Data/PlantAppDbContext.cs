@@ -12,5 +12,16 @@ namespace Gardening.Infrastructure.Data
 
         public DbSet<Plant> Plants { get; set; }
         public DbSet<PlantSpecie> PlantSpecies { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Plant>()
+                .HasOne(p => p.PlantSpecie)
+                .WithMany() 
+                .HasForeignKey(p => p.PlantSpecieId)
+                .OnDelete(DeleteBehavior.Restrict); 
+        }
     }
 }

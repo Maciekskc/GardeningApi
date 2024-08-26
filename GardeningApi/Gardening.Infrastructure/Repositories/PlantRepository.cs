@@ -21,8 +21,7 @@ namespace Gardening.Infrastructure.Repositories
 
         public async Task<Plant> GetPlantByIdAsync(int id)
         {
-            return await _context.Plants.Include(p => p.PlantSpecie)
-                .FirstOrDefaultAsync(p => p.Id == id);
+            return await _context.Plants.FirstOrDefaultAsync(p => p.Id == id);
         }
 
         public async Task<Plant> CreatePlantAsync(Plant plant)
