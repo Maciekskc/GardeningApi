@@ -1,7 +1,9 @@
 ﻿using FluentAssertions;
 using Gardening.Core.Entities;
+using Gardening.Core.Enums;
 using Gardening.Infrastructure.Data;
 using Gardening.Infrastructure.Repositories;
+using Gardening.Infrastructure.Repositories.Interfaces;
 using Gardening.Services.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,7 +17,7 @@ namespace Gardening.Services.Tests
         public PlantServiceTests()
         {
             var options = new DbContextOptionsBuilder<PlantAppDbContext>()
-                .UseInMemoryDatabase(databaseName: "PlantDb_Test")
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
                 .Options;
 
             _context = new PlantAppDbContext(options);
@@ -46,6 +48,26 @@ namespace Gardening.Services.Tests
 
             result.Should().NotBeNull();
             result.Name.Should().Be("Rose");
+        }
+
+        [Fact]
+        public async Task GetAllPlantsAsync_ShouldReturnAllPlantsThatExists()
+        {
+            // Arrange
+            var plantList = new List<Plant>()
+            {
+                new Plant { Name = "Rose", PlantingDate = DateTime.UtcNow, PlantSpecie = new PlantSpecie(){Name = "Rose", Type = PlantType.Flower}},
+                new Plant { Name = "Violet", PlantingDate = DateTime.UtcNow, PlantSpecie = new PlantSpecie(){Name = "Violet", Type = PlantType.Flower}}
+            };
+            await _context.Plants.AddRangeAsync(plantList);
+            await _context.SaveChangesAsync();
+
+            // Act
+            var result = await _plantService.GetAllPlantsAsync();
+
+            // Assert
+            result.Should().NotBeEmpty();
+            result.Should().BeEquivalentTo(plantList, options => options.Excluding(p => p.Id));
         }
 
         [Fact]

@@ -16,7 +16,7 @@ namespace Gardening.Infrastructure.Repositories
 
         public async Task<IEnumerable<Plant>> GetAllPlantsAsync()
         {
-            return await _context.Plants.Include(p => p.PlantSpecie).ToListAsync();
+            return await _context.Plants.ToListAsync();
         }
 
         public async Task<Plant> GetPlantByIdAsync(int id)

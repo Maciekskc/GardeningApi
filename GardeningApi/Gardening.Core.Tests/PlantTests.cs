@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Gardening.Core.Entities;
+using Gardening.Core.Enums;
 
 namespace Gardening.Core.Tests
 {
@@ -13,6 +14,7 @@ namespace Gardening.Core.Tests
             var name = "Rose";
             var plantingDate = DateTime.UtcNow;
             var plantSpecieId = 1;
+            var plantSpecie = new PlantSpecie { Id = plantSpecieId, Name = "Carrot", Type = PlantType.Vegetable };
 
             // Act
             var plant = new Plant
@@ -20,7 +22,8 @@ namespace Gardening.Core.Tests
                 Id = id,
                 Name = name,
                 PlantingDate = plantingDate,
-                PlantSpecieId = plantSpecieId
+                PlantSpecieId = plantSpecieId,
+                PlantSpecie = plantSpecie
             };
 
             // Assert
@@ -28,6 +31,21 @@ namespace Gardening.Core.Tests
             plant.Name.Should().Be(name);
             plant.PlantingDate.Should().Be(plantingDate);
             plant.PlantSpecieId.Should().Be(plantSpecieId);
+            plant.PlantSpecie.Should().Be(plantSpecie);
+        }
+
+        [Fact]
+        public void Plant_DefaultConstructor_ShouldInitializeProperties()
+        {
+            // Act
+            var plant = new Plant();
+
+            // Assert
+            plant.Id.Should().Be(default);
+            plant.Name.Should().Be(default);
+            plant.PlantingDate.Should().Be(default);
+            plant.PlantSpecieId.Should().Be(default);
+            plant.PlantSpecie.Should().BeNull();
         }
 
         [Fact]

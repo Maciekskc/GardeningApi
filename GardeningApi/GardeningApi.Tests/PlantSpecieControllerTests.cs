@@ -48,6 +48,15 @@ namespace GardeningApi.Tests
         }
 
         [Fact]
+        public async Task Get_ShouldReturnNotFound_WhenPlantDoesNotExist()
+        {
+            var result = await _plantSpecieController.Get(-1);
+
+            result.Value.Should().Be(null);
+            result.Result.Should().BeOfType(typeof(NotFoundResult));
+        }
+
+        [Fact]
         public async Task Post_ShouldCreatePlantSpecie()
         {
             var plantSpecie = new PlantSpecie { Id = 1, Name = "Rose", Type = PlantType.Flower };
@@ -69,6 +78,17 @@ namespace GardeningApi.Tests
             var result = await _plantSpecieController.Put(1, plantSpecie);
 
             result.Should().BeOfType<NoContentResult>();
+        }
+
+        [Fact]
+        public async Task Put_ShouldThrowBadRequest_WhenUpdatingPlantSpacieWithDifferentIdThanParameter()
+        {
+            var plantSpacieId = 0;
+            var plantSpacie = new PlantSpecie { Id = 1, Name = "Updated Rose", Type = PlantType.Flower };
+
+            var result = await _plantSpecieController.Put(plantSpacieId, plantSpacie);
+
+            result.Should().BeOfType<BadRequestResult>();
         }
 
         [Fact]

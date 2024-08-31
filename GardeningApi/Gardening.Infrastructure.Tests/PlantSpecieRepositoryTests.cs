@@ -15,7 +15,7 @@ namespace Gardening.Infrastructure.Tests
         public PlantSpecieRepositoryTests()
         {
             var options = new DbContextOptionsBuilder<PlantAppDbContext>()
-                .UseInMemoryDatabase("PlantDb_Test")
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
                 .Options;
 
             _context = new PlantAppDbContext(options);

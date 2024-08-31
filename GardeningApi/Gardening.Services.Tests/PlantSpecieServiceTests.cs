@@ -3,6 +3,7 @@ using Gardening.Core.Entities;
 using Gardening.Core.Enums;
 using Gardening.Infrastructure.Data;
 using Gardening.Infrastructure.Repositories;
+using Gardening.Infrastructure.Repositories.Interfaces;
 using Gardening.Services.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,7 +17,7 @@ namespace Gardening.Services.Tests
         public PlantSpecieServiceTests()
         {
             var options = new DbContextOptionsBuilder<PlantAppDbContext>()
-                .UseInMemoryDatabase("PlantDb_Test")
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
                 .Options;
 
             _context = new PlantAppDbContext(options);
@@ -55,6 +56,26 @@ namespace Gardening.Services.Tests
             var result = await _plantSpecieService.GetPlantSpecieByIdAsync(999);
 
             result.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task GetAllPlantSpeciesAsync_ShouldReturnAllPlantsThatExists()
+        {
+            // Arrange
+            var plantSpacieList = new List<PlantSpecie>()
+            {
+                new PlantSpecie { Name = "Mint", Type = PlantType.Herb },
+                new PlantSpecie { Name = "Paper Mint", Type = PlantType.Herb }
+            };
+            await _context.PlantSpecies.AddRangeAsync(plantSpacieList);
+            await _context.SaveChangesAsync();
+
+            // Act
+            var result = await _plantSpecieService.GetAllPlantSpeciesAsync();
+
+            // Assert
+            result.Should().NotBeEmpty();
+            result.Should().BeEquivalentTo(plantSpacieList, options => options.Excluding(p => p.Id));
         }
 
         [Fact]

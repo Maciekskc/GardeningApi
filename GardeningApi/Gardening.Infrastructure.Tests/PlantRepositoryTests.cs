@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Gardening.Core.Entities;
+using Gardening.Core.Enums;
 using Gardening.Infrastructure.Data;
 using Gardening.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +15,7 @@ namespace Gardening.Infrastructure.Tests
         public PlantRepositoryTests()
         {
             var options = new DbContextOptionsBuilder<PlantAppDbContext>()
-                .UseInMemoryDatabase("PlantDb_Test")
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
                 .Options;
 
             _context = new PlantAppDbContext(options);
@@ -25,7 +26,7 @@ namespace Gardening.Infrastructure.Tests
         public async Task AddAsync_ShouldAddPlant()
         {
             // Arrange
-            var plant = new Plant { Name = "Tomato", PlantingDate = DateTime.UtcNow, PlantSpecieId = 1 };
+            var plant = new Plant { Name = "Tomato", PlantingDate = DateTime.UtcNow,  PlantSpecie = new PlantSpecie() { Name = "Flower", Type = PlantType.Flower } };
 
             // Act
             await _plantRepository.CreatePlantAsync(plant);
@@ -41,16 +42,37 @@ namespace Gardening.Infrastructure.Tests
         public async Task GetByIdAsync_ShouldReturnPlant_WhenExists()
         {
             // Arrange
-            var plant = new Plant { Name = "Rose", PlantingDate = DateTime.UtcNow, PlantSpecieId = 1 };
+            var plant = new Plant { Name = "Rosie", PlantingDate = DateTime.UtcNow, PlantSpecie = new PlantSpecie(){Name = "Rose", Type = PlantType.Tree}};
             await _context.Plants.AddAsync(plant);
-            await _context.SaveChangesAsync();
+            var saveChangesValue = await _context.SaveChangesAsync();
 
             // Act
             var result = await _plantRepository.GetPlantByIdAsync(plant.Id);
 
             // Assert
+            saveChangesValue.Should().BeGreaterThan(0);
             result.Should().NotBeNull();
-            result.Name.Should().Be("Rose");
+            result.Name.Should().Be("Rosie");
+        }
+
+        [Fact]
+        public async Task GetAllPlantsAsync_ShouldReturnAllPlantsThatExists()
+        {
+            // Arrange
+            var plantList = new List<Plant>()
+            {
+                new Plant { Name = "Rose", PlantingDate = DateTime.UtcNow, PlantSpecie = new PlantSpecie(){Name = "Rose", Type = PlantType.Flower}},
+                new Plant { Name = "Violet", PlantingDate = DateTime.UtcNow, PlantSpecie = new PlantSpecie(){Name = "Violet", Type = PlantType.Flower}}
+            };
+            await _context.Plants.AddRangeAsync(plantList);
+            await _context.SaveChangesAsync();
+
+            // Act
+            var result = await _plantRepository.GetAllPlantsAsync();
+
+            // Assert
+            result.Should().NotBeEmpty();
+            result.Should().BeEquivalentTo(plantList, options => options.Excluding(p => p.Id));
         }
 
         [Fact]
@@ -67,7 +89,7 @@ namespace Gardening.Infrastructure.Tests
         public async Task Update_ShouldModifyExistingPlant()
         {
             // Arrange
-            var plant = new Plant { Name = "Lettuce", PlantingDate = DateTime.UtcNow, PlantSpecieId = 1 };
+            var plant = new Plant { Name = "Lettuce", PlantingDate = DateTime.UtcNow, PlantSpecie = new PlantSpecie() { Name = "Lettuce", Type = PlantType.Vegetable } };
             await _context.Plants.AddAsync(plant);
             await _context.SaveChangesAsync();
 
@@ -86,7 +108,7 @@ namespace Gardening.Infrastructure.Tests
         public async Task Delete_ShouldRemovePlant_WhenExists()
         {
             // Arrange
-            var plant = new Plant { Name = "Carrot", PlantingDate = DateTime.UtcNow, PlantSpecieId = 1 };
+            var plant = new Plant { Name = "Carrot", PlantingDate = DateTime.UtcNow, PlantSpecie = new PlantSpecie() { Name = "Carrot", Type = PlantType.Vegetable } };
             await _context.Plants.AddAsync(plant);
             await _context.SaveChangesAsync();
 
