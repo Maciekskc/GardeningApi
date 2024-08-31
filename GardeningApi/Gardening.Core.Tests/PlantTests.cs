@@ -42,9 +42,9 @@ namespace Gardening.Core.Tests
 
             // Assert
             plant.Id.Should().Be(default);
-            plant.Name.Should().Be(default);
+            plant.Name.Should().Be("Plant");
             plant.PlantingDate.Should().Be(default);
-            plant.PlantSpecieId.Should().Be(default);
+            plant.PlantSpecieId.Should().BeNull();
             plant.PlantSpecie.Should().BeNull();
         }
 

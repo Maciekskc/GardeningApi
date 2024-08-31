@@ -1,4 +1,5 @@
-﻿using Gardening.Core.Entities;
+﻿using System.Net.Mime;
+using Gardening.Core.Entities;
 using Gardening.Infrastructure.Repositories.Interfaces;
 using Gardening.Services.Services.Interfaces;
 
@@ -18,7 +19,7 @@ namespace Gardening.Services.Services
             return await _repository.GetAllPlantsAsync();
         }
 
-        public async Task<Plant> GetPlantByIdAsync(int id)
+        public async Task<Plant?> GetPlantByIdAsync(int id)
         {
             return await _repository.GetPlantByIdAsync(id);
         }
@@ -28,9 +29,9 @@ namespace Gardening.Services.Services
             return await _repository.CreatePlantAsync(plant);
         }
 
-        public async Task<Plant> UpdatePlantAsync(Plant plant)
+        public async Task<Plant?> UpdatePlantAsync(Plant plant)
         {
-            return await _repository.UpdatePlantAsync(plant);
+            return await _repository.UpdatePlantAsync(plant) ?? throw new Exception("Plant not found");
         }
 
         public async Task DeletePlantAsync(int id)

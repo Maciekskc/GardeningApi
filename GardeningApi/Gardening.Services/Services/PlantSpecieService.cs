@@ -18,7 +18,7 @@ namespace Gardening.Services.Services
             return await _repository.GetAllPlantSpeciesAsync();
         }
 
-        public async Task<PlantSpecie> GetPlantSpecieByIdAsync(int id)
+        public async Task<PlantSpecie?> GetPlantSpecieByIdAsync(int id)
         {
             return await _repository.GetPlantSpecieByIdAsync(id);
         }
@@ -28,7 +28,7 @@ namespace Gardening.Services.Services
             return await _repository.CreatePlantSpecieAsync(plantSpecie);
         }
 
-        public async Task<PlantSpecie> UpdatePlantSpecieAsync(PlantSpecie plantSpecie)
+        public async Task<PlantSpecie?> UpdatePlantSpecieAsync(PlantSpecie plantSpecie)
         {
             return await _repository.UpdatePlantSpecieAsync(plantSpecie);
         }

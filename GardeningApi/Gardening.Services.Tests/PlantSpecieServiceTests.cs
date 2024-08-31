@@ -33,8 +33,8 @@ namespace Gardening.Services.Tests
             var result = await _plantSpecieService.CreatePlantSpecieAsync(plantSpecie);
 
             result.Should().NotBeNull();
-            result.Id.Should().BeGreaterThan(0);
-            result.Name.Should().Be("Tomato");
+            result!.Id.Should().BeGreaterThan(0);
+            result!.Name.Should().Be("Tomato");
         }
 
         [Fact]
@@ -47,7 +47,7 @@ namespace Gardening.Services.Tests
             var result = await _plantSpecieService.GetPlantSpecieByIdAsync(plantSpecie.Id);
 
             result.Should().NotBeNull();
-            result.Name.Should().Be("Rose");
+            result!.Name.Should().Be("Rose");
         }
 
         [Fact]
@@ -89,7 +89,7 @@ namespace Gardening.Services.Tests
             var result = await _plantSpecieService.UpdatePlantSpecieAsync(plantSpecie);
 
             result.Should().NotBeNull();
-            result.Name.Should().Be("Updated Lettuce");
+            result!.Name.Should().Be("Updated Lettuce");
         }
 
         [Fact]

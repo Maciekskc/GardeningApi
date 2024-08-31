@@ -35,7 +35,7 @@ namespace Gardening.Infrastructure.Tests
             // Assert
             var result = await _context.Plants.FindAsync(plant.Id);
             result.Should().NotBeNull();
-            result.Name.Should().Be("Tomato");
+            result!.Name.Should().Be("Tomato");
         }
 
         [Fact]
@@ -52,7 +52,7 @@ namespace Gardening.Infrastructure.Tests
             // Assert
             saveChangesValue.Should().BeGreaterThan(0);
             result.Should().NotBeNull();
-            result.Name.Should().Be("Rosie");
+            result!.Name.Should().Be("Rosie");
         }
 
         [Fact]
@@ -101,7 +101,7 @@ namespace Gardening.Infrastructure.Tests
             // Assert
             var result = await _context.Plants.FindAsync(plant.Id);
             result.Should().NotBeNull();
-            result.Name.Should().Be("Updated Lettuce");
+            result!.Name.Should().Be("Updated Lettuce");
         }
 
         [Fact]

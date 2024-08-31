@@ -46,8 +46,8 @@ namespace Gardening.Services.Tests
 
             var result = await _plantService.GetPlantByIdAsync(plant.Id);
 
-            result.Should().NotBeNull();
-            result.Name.Should().Be("Rose");
+            result!.Should().NotBeNull();
+            result!.Name.Should().Be("Rose");
         }
 
         [Fact]
@@ -89,7 +89,7 @@ namespace Gardening.Services.Tests
             var result = await _plantService.UpdatePlantAsync(plant);
 
             result.Should().NotBeNull();
-            result.Name.Should().Be("Updated Lettuce");
+            result!.Name.Should().Be("Updated Lettuce");
         }
 
         [Fact]

@@ -26,7 +26,7 @@ namespace GardeningApi.Tests
 
             // Assert
             response.EnsureSuccessStatusCode(); // Status code 200-299
-            response.Content.Headers.ContentType.ToString().Should().Be("application/json; charset=utf-8");
+            response.Content.Headers.ContentType?.ToString().Should().Be("application/json; charset=utf-8");
         }
 
         [Fact]

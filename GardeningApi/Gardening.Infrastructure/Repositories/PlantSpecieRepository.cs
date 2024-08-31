@@ -19,7 +19,7 @@ namespace Gardening.Infrastructure.Repositories
             return await _context.PlantSpecies.ToListAsync();
         }
 
-        public async Task<PlantSpecie> GetPlantSpecieByIdAsync(int id)
+        public async Task<PlantSpecie?> GetPlantSpecieByIdAsync(int id)
         {
             return await _context.PlantSpecies.FindAsync(id);
         }
@@ -31,7 +31,7 @@ namespace Gardening.Infrastructure.Repositories
             return plantSpecie;
         }
 
-        public async Task<PlantSpecie> UpdatePlantSpecieAsync(PlantSpecie plantSpecie)
+        public async Task<PlantSpecie?> UpdatePlantSpecieAsync(PlantSpecie plantSpecie)
         {
             _context.Entry(plantSpecie).State = EntityState.Modified;
             await _context.SaveChangesAsync();
