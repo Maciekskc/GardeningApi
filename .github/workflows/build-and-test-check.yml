@@ -33,10 +33,5 @@ jobs:
         uses: SonarSource/sonarcloud-github-action@v3.0.0
         with:
           projectBaseDir: ./GardeningApi/
-          args: >
-            -Dsonar.organization=${{ env.SONAR_ORGANIZATION }}
-            -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
-            -Dsonar.sources=./GardeningApi/
-            -Dsonar.verbose=true
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
