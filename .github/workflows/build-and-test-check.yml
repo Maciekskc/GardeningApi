@@ -30,6 +30,8 @@ jobs:
         run: dotnet test ./GardeningApi/GardeningApi.sln
 
       - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@<action version> # Ex: v2.1.0, See the latest version at https://github.com/marketplace/actions/sonarcloud-scan
+        uses: sonarsource/sonarcloud-github-action@2.1.0 # Ex: v2.1.0, See the latest version at https://github.com/marketplace/actions/sonarcloud-scan
+        with:
+          projectBaseDir: ./GardeningApi/
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
