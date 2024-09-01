@@ -36,8 +36,7 @@ jobs:
           args: >
             -Dsonar.organization=${{ env.SONAR_ORGANIZATION }}
             -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
-            -Dsonar.python.coverage.reportPaths=coverage.xml
-            -Dsonar.sources=lib/
+            -Dsonar.sources=./GardeningApi/
             -Dsonar.verbose=true
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
