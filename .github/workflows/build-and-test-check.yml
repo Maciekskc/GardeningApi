@@ -30,7 +30,7 @@ jobs:
         run: dotnet test ./GardeningApi/GardeningApi.sln
 
       - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@2.1.0 # Ex: v2.1.0, See the latest version at https://github.com/marketplace/actions/sonarcloud-scan
+        uses: SonarSource/sonarcloud-github-action@v3.0.0
         with:
           projectBaseDir: ./GardeningApi/
         env:
