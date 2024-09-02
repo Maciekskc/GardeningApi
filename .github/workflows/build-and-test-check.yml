@@ -41,8 +41,6 @@ jobs:
             -Dsonar.projectKey=Maciekskc_GardeningApi
             -Dsonar.python.coverage.reportPaths=testResults/**/coverage.cobertura.xml
             -Dsonar.sources=.
-            -Dsonar.test.exclusions=tests/**
-            -Dsonar.tests=tests/
             -Dsonar.verbose=true
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
