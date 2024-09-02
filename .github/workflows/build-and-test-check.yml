@@ -24,10 +24,10 @@ jobs:
         run: dotnet restore ./GardeningApi/GardeningApi.sln
 
       - name: Build
-        run: dotnet build --no-restore --no-incremental ./GardeningApi/GardeningApi.sln
+        run: dotnet build --no-build --configuration Release  ./GardeningApi/GardeningApi.sln
 
       - name: Test with the dotnet CLI
-        run: dotnet test -p:CollectCoverage=true -p:CoverletOutput=TestResults/ -p:CoverletOutputFormat=opencover --no-build --verbosity normal ./GardeningApi/GardeningApi.sln
+        run: dotnet test --no-build --configuration Release --collect:"XPlat Code Coverage" ./GardeningApi/GardeningApi.sln
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v3.0.0
