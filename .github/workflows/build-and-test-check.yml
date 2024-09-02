@@ -24,7 +24,7 @@ jobs:
         run: dotnet restore ./GardeningApi/GardeningApi.sln
 
       - name: Build
-        run: dotnet build --no-build --configuration Release  ./GardeningApi/GardeningApi.sln
+        run: dotnet build --configuration Release ./GardeningApi/GardeningApi.sln
 
       - name: Test with the dotnet CLI
         run: dotnet test --no-build --configuration Release --collect:"XPlat Code Coverage" ./GardeningApi/GardeningApi.sln
