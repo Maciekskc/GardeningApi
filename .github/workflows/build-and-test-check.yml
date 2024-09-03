@@ -1,4 +1,4 @@
-name: CI
+name: Build, Test & Scan project
 
 on:
   push:
@@ -25,40 +25,9 @@ jobs:
           dotnet tool install --global dotnet-coverage
           dotnet tool install --global dotnet-sonarscanner 
           
-      - name: Build and Scan project
+      - name: Build, test and Scan project
         run: |
           dotnet sonarscanner begin /k:"Maciekskc_GardeningApi" /o:"maciekskc" /d:sonar.token=${{ secrets.SONAR_TOKEN }} /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml 
           dotnet build --no-incremental --configuration Release ./GardeningApi/GardeningApi.sln
           dotnet-coverage collect "dotnet test --configuration Release ./GardeningApi/GardeningApi.sln" -f xml -o "coverage.xml" 
           dotnet sonarscanner end /d:sonar.token=${{ secrets.SONAR_TOKEN }}
-
-      # - name: Initialize sonar analyzer
-      #   run: dotnet sonarscanner begin /k:"Maciekskc_GardeningApi" /d:sonar.token=${{ secrets.SONAR_TOKEN }} /d:sonar.cs.dotcover.reportsPaths=./GardeningApi/coverage.cobertura.xml
-
-      # - name: Install dependencies
-      #   run: dotnet restore ./GardeningApi/GardeningApi.sln
-
-      # - name: Build
-      #   run: dotnet build --configuration Release ./GardeningApi/GardeningApi.sln
-
-      # - name: Test with the dotnet CLI
-      #   run: dotnet test --no-build --configuration Release --collect "XPlat Code Coverage;Format=cobertura%2copencover"' --results-directory "./GardeningApi" ./GardeningApi/GardeningApi.sln
-
-      # - name: Send Analysis report
-      #   run: dotnet sonarscanner end /d:sonar.token=${{ secrets.SONAR_TOKEN }}
-
-      # - name: SonarCloud Scan
-      #   uses: SonarSource/sonarcloud-github-action@v3.0.0
-      #   with:
-      #     projectBaseDir: ./GardeningApi/
-      #     args: >
-      #       -Dsonar.organization=maciekskc
-      #       -Dsonar.projectKey=Maciekskc_GardeningApi
-      #       -Dsonar.python.coverage.reportPaths=testResults/**/coverage.cobertura.xml
-      #       -Dsonar.sources=.
-      #       -Dsonar.verbose=true
-      #       -Dsonar.scm.exclusions.disabled=true
-      #   env:
-      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-          
