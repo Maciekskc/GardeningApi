@@ -27,7 +27,7 @@ jobs:
         run: |
           dotnet tool install --global dotnet-sonarscanner 
           dotnet sonarscanner begin /k:"Maciekskc_GardeningApi" 
-              /d:sonar.organization="maciekskc"
+              /o:"maciekskc"
               /d:sonar.token=${{ secrets.SONAR_TOKEN }}
               /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml 
           dotnet build --no-incremental 
