@@ -1,0 +1,33 @@
+name: Build, Test & Scan project
+
+on:
+  push:
+    branches: [ "develop", "main" ]
+  pull_request:
+    branches: [ "develop", "main" ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Install sonar scanner and dotnet coverage tool
+        run: |
+          dotnet tool install --global dotnet-coverage
+          dotnet tool install --global dotnet-sonarscanner 
+          
+      - name: Build, test and Scan project
+        run: |
+          dotnet sonarscanner begin /k:"Maciekskc_GardeningApi" /o:"maciekskc" /d:sonar.token=${{ secrets.SONAR_TOKEN }} /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml 
+          dotnet build --no-incremental --configuration Release ./GardeningApi/GardeningApi.sln
+          dotnet-coverage collect "dotnet test --configuration Release ./GardeningApi/GardeningApi.sln" -f xml -o "coverage.xml" 
+          dotnet sonarscanner end /d:sonar.token=${{ secrets.SONAR_TOKEN }}
