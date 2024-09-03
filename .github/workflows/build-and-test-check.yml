@@ -28,8 +28,8 @@ jobs:
       - name: Build and Scan project
         run: |
           dotnet sonarscanner begin /k:"Maciekskc_GardeningApi" /o:"maciekskc" /d:sonar.token=${{ secrets.SONAR_TOKEN }} /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml 
-          dotnet build --no-incremental 
-          dotnet-coverage collect "dotnet test" -f xml -o "coverage.xml" 
+          dotnet build --no-incremental --configuration Release ./GardeningApi/GardeningApi.sln
+          dotnet-coverage collect "dotnet test --configuration Release ./GardeningApi/GardeningApi.sln" -f xml -o "coverage.xml" 
           dotnet sonarscanner end /d:sonar.token=${{ secrets.SONAR_TOKEN }}
 
       # - name: Initialize sonar analyzer
