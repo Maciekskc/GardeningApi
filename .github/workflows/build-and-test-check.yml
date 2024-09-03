@@ -21,22 +21,32 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Install sonar scanner
-        run: dotnet tool install --global dotnet-sonarscanner
+        run: dotnet tool install --global dotnet-coverage
+        
+      - name: Build and Scan project
+        run: |
+          dotnet tool install --global dotnet-sonarscanner 
+          dotnet sonarscanner begin /k:"Maciekskc_GardeningApi" 
+              /d:sonar.token=${{ secrets.SONAR_TOKEN }}
+              /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml 
+          dotnet build --no-incremental 
+          dotnet-coverage collect "dotnet test" -f xml -o "coverage.xml" 
+          dotnet sonarscanner end /d:sonar.token=${{ secrets.SONAR_TOKEN }}
 
-      - name: Initialize sonar analyzer
-        run: dotnet sonarscanner begin /k:"Maciekskc_GardeningApi" /d:sonar.token=${{ secrets.SONAR_TOKEN }} /d:sonar.cs.dotcover.reportsPaths=./GardeningApi/coverage.cobertura.xml
+      # - name: Initialize sonar analyzer
+      #   run: dotnet sonarscanner begin /k:"Maciekskc_GardeningApi" /d:sonar.token=${{ secrets.SONAR_TOKEN }} /d:sonar.cs.dotcover.reportsPaths=./GardeningApi/coverage.cobertura.xml
 
-      - name: Install dependencies
-        run: dotnet restore ./GardeningApi/GardeningApi.sln
+      # - name: Install dependencies
+      #   run: dotnet restore ./GardeningApi/GardeningApi.sln
 
-      - name: Build
-        run: dotnet build --configuration Release ./GardeningApi/GardeningApi.sln
+      # - name: Build
+      #   run: dotnet build --configuration Release ./GardeningApi/GardeningApi.sln
 
-      - name: Test with the dotnet CLI
-        run: dotnet test --no-build --configuration Release --collect "XPlat Code Coverage;Format=cobertura%2copencover"' --results-directory "./GardeningApi" ./GardeningApi/GardeningApi.sln
+      # - name: Test with the dotnet CLI
+      #   run: dotnet test --no-build --configuration Release --collect "XPlat Code Coverage;Format=cobertura%2copencover"' --results-directory "./GardeningApi" ./GardeningApi/GardeningApi.sln
 
-      - name: Send Analysis report
-        run: dotnet sonarscanner end /d:sonar.token=${{ secrets.SONAR_TOKEN }}
+      # - name: Send Analysis report
+      #   run: dotnet sonarscanner end /d:sonar.token=${{ secrets.SONAR_TOKEN }}
 
       # - name: SonarCloud Scan
       #   uses: SonarSource/sonarcloud-github-action@v3.0.0
