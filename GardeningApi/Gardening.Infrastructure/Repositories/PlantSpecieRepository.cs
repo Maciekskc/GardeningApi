@@ -1,6 +1,7 @@
 ﻿using Gardening.Core.Entities;
 using Gardening.Infrastructure.Data;
 using Gardening.Infrastructure.Repositories.Interfaces;
+using LanguageExt;
 using Microsoft.EntityFrameworkCore;
 
 namespace Gardening.Infrastructure.Repositories
@@ -19,7 +20,7 @@ namespace Gardening.Infrastructure.Repositories
             return await _context.PlantSpecies.ToListAsync();
         }
 
-        public async Task<PlantSpecie?> GetPlantSpecieByIdAsync(int id)
+        public async Task<Option<PlantSpecie>> GetPlantSpecieByIdAsync(int id)
         {
             return await _context.PlantSpecies.FindAsync(id);
         }

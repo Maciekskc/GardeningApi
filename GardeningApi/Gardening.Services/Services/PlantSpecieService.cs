@@ -1,6 +1,8 @@
 ﻿using Gardening.Core.Entities;
 using Gardening.Infrastructure.Repositories.Interfaces;
 using Gardening.Services.Services.Interfaces;
+using LanguageExt;
+using LanguageExt.Common;
 
 namespace Gardening.Services.Services
 {
@@ -18,7 +20,7 @@ namespace Gardening.Services.Services
             return await _repository.GetAllPlantSpeciesAsync();
         }
 
-        public async Task<PlantSpecie?> GetPlantSpecieByIdAsync(int id)
+        public async Task<Result<PlantSpecie>> GetPlantSpecieByIdAsync(int id)
         {
             return await _repository.GetPlantSpecieByIdAsync(id);
         }
@@ -28,7 +30,7 @@ namespace Gardening.Services.Services
             return await _repository.CreatePlantSpecieAsync(plantSpecie);
         }
 
-        public async Task<PlantSpecie?> UpdatePlantSpecieAsync(PlantSpecie plantSpecie)
+        public async Task<Option<PlantSpecie>> UpdatePlantSpecieAsync(PlantSpecie plantSpecie)
         {
             return await _repository.UpdatePlantSpecieAsync(plantSpecie);
         }

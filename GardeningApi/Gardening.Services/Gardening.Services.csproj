@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="LanguageExt.Core" Version="4.4.9" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Gardening.Core\Gardening.Core.csproj" />
     <ProjectReference Include="..\Gardening.Infrastructure\Gardening.Infrastructure.csproj" />
   </ItemGroup>
