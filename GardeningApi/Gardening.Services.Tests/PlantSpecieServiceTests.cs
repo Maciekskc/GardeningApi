@@ -3,9 +3,10 @@ using Gardening.Core.Entities;
 using Gardening.Core.Enums;
 using Gardening.Infrastructure.Data;
 using Gardening.Infrastructure.Repositories;
-using Gardening.Infrastructure.Repositories.Interfaces;
 using Gardening.Services.Services;
 using Microsoft.EntityFrameworkCore;
+using LanguageExt;
+using LanguageExt.Common;
 
 namespace Gardening.Services.Tests
 {
@@ -46,8 +47,12 @@ namespace Gardening.Services.Tests
 
             var result = await _plantSpecieService.GetPlantSpecieByIdAsync(plantSpecie.Id);
 
-            result.Should().NotBeNull();
-            result!.Name.Should().Be("Rose");
+            result.IsSuccess.Should().BeTrue();
+            result.IfSucc(p =>
+            {
+                p.Should().NotBeNull();
+                p.Name.Should().Be("Rose");
+            });
         }
 
         [Fact]
@@ -55,7 +60,11 @@ namespace Gardening.Services.Tests
         {
             var result = await _plantSpecieService.GetPlantSpecieByIdAsync(999);
 
-            result.Should().BeNull();
+            result.IsFaulted.Should().BeTrue();
+            result.IfFail(f =>
+            {
+                f.Message.Should().Be("The object does not exist");
+            });
         }
 
         [Fact]
@@ -88,8 +97,12 @@ namespace Gardening.Services.Tests
             plantSpecie.Name = "Updated Lettuce";
             var result = await _plantSpecieService.UpdatePlantSpecieAsync(plantSpecie);
 
-            result.Should().NotBeNull();
-            result!.Name.Should().Be("Updated Lettuce");
+            result.IsSome.Should().BeTrue();
+            result.IfSome(p =>
+            {
+                p.Should().NotBeNull();
+                p.Name.Should().Be("Updated Lettuce");
+            });
         }
 
         [Fact]

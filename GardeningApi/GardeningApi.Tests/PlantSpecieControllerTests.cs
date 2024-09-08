@@ -3,6 +3,9 @@ using Gardening.Core.Entities;
 using Gardening.Core.Enums;
 using Gardening.Services.Services.Interfaces;
 using GardeningApi.Controllers;
+using LanguageExt;
+using LanguageExt.Common;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
@@ -40,11 +43,13 @@ namespace GardeningApi.Tests
         {
             var plantSpecie = new PlantSpecie { Id = 1, Name = "Rose", Type = PlantType.Flower };
 
-            _plantSpecieServiceMock.Setup(service => service.GetPlantSpecieByIdAsync(1)).ReturnsAsync(plantSpecie);
+            _plantSpecieServiceMock.Setup(service => service.GetPlantSpecieByIdAsync(1)).ReturnsAsync(new Result<PlantSpecie>(plantSpecie));
 
             var result = await _plantSpecieController.Get(1);
 
-            result.Value.Should().Be(plantSpecie);
+            var okResult = result.Result as OkObjectResult;
+            okResult.Should().NotBeNull();
+            okResult.Value.Should().Be(plantSpecie);
         }
 
         [Fact]
@@ -52,8 +57,7 @@ namespace GardeningApi.Tests
         {
             var result = await _plantSpecieController.Get(-1);
 
-            result.Value.Should().Be(null);
-            result.Result.Should().BeOfType(typeof(NotFoundResult));
+            result.Result.Should().BeOfType(typeof(NotFoundObjectResult));
         }
 
         [Fact]

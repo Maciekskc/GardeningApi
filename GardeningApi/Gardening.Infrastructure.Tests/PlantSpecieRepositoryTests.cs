@@ -3,6 +3,7 @@ using Gardening.Core.Entities;
 using Gardening.Core.Enums;
 using Gardening.Infrastructure.Data;
 using Gardening.Infrastructure.Repositories;
+using LanguageExt.SomeHelp;
 using Microsoft.EntityFrameworkCore;
 
 namespace Gardening.Infrastructure.Tests
@@ -48,10 +49,14 @@ namespace Gardening.Infrastructure.Tests
 
             // Act
             var result = await _plantSpecieRepository.GetPlantSpecieByIdAsync(plantSpecie.Id);
-
+            
             // Assert
-            result.Should().NotBeNull();
-            result!.Name.Should().Be("Rose");
+            result.IsSome.Should().BeTrue();
+            result.IfSome(p =>
+            {
+                p.Should().NotBeNull();
+                p.Name.Should().Be("Rose");
+            });
         }
 
         [Fact]
@@ -81,7 +86,7 @@ namespace Gardening.Infrastructure.Tests
             var result = await _plantSpecieRepository.GetPlantSpecieByIdAsync(999);
 
             // Assert
-            result.Should().BeNull();
+            result.IsNone.Should().BeTrue();
         }
 
         [Fact]

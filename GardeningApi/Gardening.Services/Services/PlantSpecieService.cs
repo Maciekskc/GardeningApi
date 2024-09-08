@@ -22,8 +22,12 @@ namespace Gardening.Services.Services
 
         public async Task<Result<PlantSpecie>> GetPlantSpecieByIdAsync(int id)
         {
-            return await _repository.GetPlantSpecieByIdAsync(id);
+            var result = await _repository.GetPlantSpecieByIdAsync(id);
+            return result.Match(
+                obj => new Result<PlantSpecie>(obj),
+                () => new Result<PlantSpecie>(new Exception("The object does not exist")));
         }
+
 
         public async Task<PlantSpecie> CreatePlantSpecieAsync(PlantSpecie plantSpecie)
         {

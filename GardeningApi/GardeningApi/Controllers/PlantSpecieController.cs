@@ -25,11 +25,9 @@ namespace GardeningApi.Controllers
         public async Task<ActionResult<PlantSpecie>> Get(int id)
         {
             var plantSpecie = await _plantSpecieService.GetPlantSpecieByIdAsync(id);
-            if (plantSpecie == null)
-            {
-                return NotFound();
-            }
-            return plantSpecie;
+            return plantSpecie.Match<ActionResult>(
+                success => Ok(success),
+                fail => NotFound(fail.Message));
         }
 
         [HttpPost]
