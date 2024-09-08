@@ -8,8 +8,8 @@ namespace Gardening.Services.Services.Interfaces
     {
         Task<IEnumerable<PlantSpecie>> GetAllPlantSpeciesAsync();
         Task<Result<PlantSpecie>> GetPlantSpecieByIdAsync(int id);
-        Task<PlantSpecie> CreatePlantSpecieAsync(PlantSpecie plantSpecie);
-        Task<Option<PlantSpecie>> UpdatePlantSpecieAsync(PlantSpecie plantSpecie);
-        Task DeletePlantSpecieAsync(int id);
+        Task<Result<PlantSpecie>> CreatePlantSpecieAsync(PlantSpecie plantSpecie);
+        Task<Result<PlantSpecie>> UpdatePlantSpecieAsync(int id, PlantSpecie plantSpecie);
+        Task<Result<int>> DeletePlantSpecieAsync(int id);
     }
 }

@@ -7,8 +7,8 @@ namespace Gardening.Infrastructure.Repositories.Interfaces
     {
         Task<IEnumerable<PlantSpecie>> GetAllPlantSpeciesAsync();
         Task<Option<PlantSpecie>> GetPlantSpecieByIdAsync(int id);
-        Task<PlantSpecie> CreatePlantSpecieAsync(PlantSpecie plantSpecie);
-        Task<PlantSpecie?> UpdatePlantSpecieAsync(PlantSpecie plantSpecie);
-        Task DeletePlantSpecieAsync(int id);
+        Task<Option<PlantSpecie>> CreatePlantSpecieAsync(PlantSpecie plantSpecie);
+        Task<Option<PlantSpecie>> UpdatePlantSpecieAsync(PlantSpecie plantSpecie);
+        Task<Option<int>> DeletePlantSpecieAsync(PlantSpecie plantSpacie);
     }
 }

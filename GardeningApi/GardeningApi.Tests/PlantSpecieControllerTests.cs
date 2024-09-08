@@ -69,7 +69,7 @@ namespace GardeningApi.Tests
 
             var result = await _plantSpecieController.Post(plantSpecie);
 
-            result.Result.Should().BeOfType<CreatedAtActionResult>();
+            result.Result.Should().BeOfType<OkObjectResult>();
         }
 
         [Fact]
@@ -77,11 +77,11 @@ namespace GardeningApi.Tests
         {
             var plantSpecie = new PlantSpecie { Id = 1, Name = "Updated Rose", Type = PlantType.Flower };
 
-            _plantSpecieServiceMock.Setup(service => service.UpdatePlantSpecieAsync(plantSpecie)).ReturnsAsync(plantSpecie);
+            _plantSpecieServiceMock.Setup(service => service.UpdatePlantSpecieAsync(plantSpecie.Id,plantSpecie)).ReturnsAsync(new Result<PlantSpecie>(plantSpecie));
 
             var result = await _plantSpecieController.Put(1, plantSpecie);
 
-            result.Should().BeOfType<NoContentResult>();
+            result.Should().BeOfType<OkObjectResult>();
         }
 
         [Fact]
@@ -92,13 +92,13 @@ namespace GardeningApi.Tests
 
             var result = await _plantSpecieController.Put(plantSpacieId, plantSpacie);
 
-            result.Should().BeOfType<BadRequestResult>();
+            result.Should().BeOfType<BadRequestObjectResult>();
         }
 
         [Fact]
         public async Task Delete_ShouldRemovePlantSpecie()
         {
-            _plantSpecieServiceMock.Setup(service => service.DeletePlantSpecieAsync(1)).Returns(Task.CompletedTask);
+            _plantSpecieServiceMock.Setup(service => service.DeletePlantSpecieAsync(1)).Returns(Task.FromResult(new Result<int>(1)));
 
             var result = await _plantSpecieController.Delete(1);
 

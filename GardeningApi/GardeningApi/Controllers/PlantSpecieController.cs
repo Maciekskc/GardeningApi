@@ -24,36 +24,29 @@ namespace GardeningApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<PlantSpecie>> Get(int id)
         {
-            var plantSpecie = await _plantSpecieService.GetPlantSpecieByIdAsync(id);
-            return plantSpecie.Match<ActionResult>(
-                success => Ok(success),
-                fail => NotFound(fail.Message));
+            var result = await _plantSpecieService.GetPlantSpecieByIdAsync(id);
+            return result.Match<ActionResult>(s => Ok(s), f => NotFound(f.Message));
         }
 
         [HttpPost]
         public async Task<ActionResult<PlantSpecie>> Post(PlantSpecie plantSpecie)
         {
-            var createdPlantSpecie = await _plantSpecieService.CreatePlantSpecieAsync(plantSpecie);
-            return CreatedAtAction(nameof(Get), new { id = createdPlantSpecie.Id }, createdPlantSpecie);
+            var result = await _plantSpecieService.CreatePlantSpecieAsync(plantSpecie);
+            return result.Match<ActionResult>(s => Ok(s), f => BadRequest(f.Message));
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, PlantSpecie plantSpecie)
         {
-            if (id != plantSpecie.Id)
-            {
-                return BadRequest();
-            }
-
-            await _plantSpecieService.UpdatePlantSpecieAsync(plantSpecie);
-            return NoContent();
+            var result = await _plantSpecieService.UpdatePlantSpecieAsync(id, plantSpecie);
+            return result.Match<IActionResult>(s=> Ok(s), f => BadRequest(f.Message));
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _plantSpecieService.DeletePlantSpecieAsync(id);
-            return NoContent();
+            var result = await _plantSpecieService.DeletePlantSpecieAsync(id);
+            return result.Match<IActionResult>(s => NoContent(), f => BadRequest(f.Message));
         }
     }
 }

@@ -121,7 +121,7 @@ namespace Gardening.Infrastructure.Tests
             result.Should().Be(plantSpecie);
 
             _context.Entry(plantSpecie).State = EntityState.Modified;
-            await _plantSpecieRepository.DeletePlantSpecieAsync(plantSpecie.Id);
+            await _plantSpecieRepository.DeletePlantSpecieAsync(plantSpecie);
             await _context.SaveChangesAsync();
 
             // Assert
