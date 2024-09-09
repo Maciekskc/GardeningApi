@@ -1,5 +1,4 @@
 ﻿using Gardening.Core.Entities;
-using LanguageExt;
 using LanguageExt.Common;
 
 namespace Gardening.Services.Services.Interfaces

@@ -4,7 +4,6 @@ using Gardening.Core.Enums;
 using Gardening.Infrastructure.Data;
 using Gardening.Infrastructure.Repositories;
 using Gardening.Services.Services;
-using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace Gardening.Services.Tests
@@ -139,7 +138,7 @@ namespace Gardening.Services.Tests
             result.IfFail(p =>
             {
                 p.Should().NotBeNull();
-                p.Message.Should().Be("Plant not found in the database, nothing to update");
+                p.Message.Should().Be("Plant Specie not found in the database, nothing to update");
             });
         }
 

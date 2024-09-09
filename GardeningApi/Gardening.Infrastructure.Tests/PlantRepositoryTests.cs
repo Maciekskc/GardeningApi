@@ -3,6 +3,7 @@ using Gardening.Core.Entities;
 using Gardening.Core.Enums;
 using Gardening.Infrastructure.Data;
 using Gardening.Infrastructure.Repositories;
+using LanguageExt.SomeHelp;
 using Microsoft.EntityFrameworkCore;
 
 namespace Gardening.Infrastructure.Tests
@@ -51,8 +52,12 @@ namespace Gardening.Infrastructure.Tests
 
             // Assert
             saveChangesValue.Should().BeGreaterThan(0);
-            result.Should().NotBeNull();
-            result!.Name.Should().Be("Rosie");
+            result.IsSome.Should().BeTrue();
+            result.IfSome(p =>
+            {
+                p.Should().NotBeNull();
+                p.Name.Should().Be("Rosie");
+            });
         }
 
         [Fact]
@@ -82,7 +87,7 @@ namespace Gardening.Infrastructure.Tests
             var result = await _plantRepository.GetPlantByIdAsync(999);
 
             // Assert
-            result.Should().BeNull();
+            result.IsNone.Should().BeTrue();
         }
 
         [Fact]
@@ -113,7 +118,7 @@ namespace Gardening.Infrastructure.Tests
             await _context.SaveChangesAsync();
 
             // Act
-            await _plantRepository.DeletePlantAsync(plant.Id);
+            await _plantRepository.DeletePlantAsync(plant);
             await _context.SaveChangesAsync();
 
             // Assert

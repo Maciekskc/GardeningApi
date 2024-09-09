@@ -3,7 +3,6 @@ using Gardening.Core.Entities;
 using Gardening.Core.Enums;
 using Gardening.Infrastructure.Data;
 using Gardening.Infrastructure.Repositories;
-using LanguageExt.SomeHelp;
 using Microsoft.EntityFrameworkCore;
 
 namespace Gardening.Infrastructure.Tests
@@ -45,12 +44,13 @@ namespace Gardening.Infrastructure.Tests
             // Arrange
             var plantSpecie = new PlantSpecie { Name = "Rose", Type = PlantType.Flower };
             await _context.PlantSpecies.AddAsync(plantSpecie);
-            await _context.SaveChangesAsync();
+            var saveChangesValue = await _context.SaveChangesAsync();
 
             // Act
             var result = await _plantSpecieRepository.GetPlantSpecieByIdAsync(plantSpecie.Id);
-            
+
             // Assert
+            saveChangesValue.Should().BeGreaterThan(0);
             result.IsSome.Should().BeTrue();
             result.IfSome(p =>
             {

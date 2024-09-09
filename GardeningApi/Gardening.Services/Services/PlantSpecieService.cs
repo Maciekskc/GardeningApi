@@ -45,7 +45,7 @@ namespace Gardening.Services.Services
             var existingPlant = await repository.GetPlantSpecieByIdAsync(id);
             if (existingPlant.IsNone)
             {
-                return new Result<PlantSpecie>(new Exception("Plant not found in the database, nothing to update"));
+                return new Result<PlantSpecie>(new Exception("Plant Specie not found in the database, nothing to update"));
             }
 
             var result = await repository.UpdatePlantSpecieAsync(plantSpecie);
