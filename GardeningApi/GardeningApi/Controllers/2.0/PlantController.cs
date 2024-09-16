@@ -11,7 +11,7 @@ namespace GardeningApi.Controllers._2._0
     public class PlantController(IPlantService plantService) : ControllerBase
     {
         [HttpPost]
-        public async Task<ActionResult<Plant>> Post(Plant plant)
+        public async Task<ActionResult<PostPlantResponseDto>> Post(PostPlantRequestDto plant)
         {
             var result = await plantService.CreatePlantAsync(plant);
             return result.Match<ActionResult>(s => Ok(s), f => BadRequest(f.Message));

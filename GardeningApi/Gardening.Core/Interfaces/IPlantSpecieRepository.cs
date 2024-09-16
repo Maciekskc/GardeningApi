@@ -1,7 +1,7 @@
 ﻿using Gardening.Core.Entities;
 using LanguageExt;
 
-namespace Gardening.Infrastructure.Repositories.Interfaces
+namespace Gardening.Core.Interfaces
 {
     public interface IPlantSpecieRepository
     {

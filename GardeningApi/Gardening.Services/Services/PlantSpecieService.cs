@@ -1,9 +1,7 @@
-﻿using System.Security.Cryptography.X509Certificates;
-using Gardening.Core.Entities;
-using Gardening.Infrastructure.Repositories.Interfaces;
+﻿using Gardening.Core.Entities;
+using Gardening.Core.Interfaces;
 using Gardening.Services.Services.Interfaces;
 using LanguageExt.Common;
-using LanguageExt.SomeHelp;
 
 namespace Gardening.Services.Services
 {

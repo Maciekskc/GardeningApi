@@ -1,6 +1,6 @@
 ﻿using Gardening.Core.Entities;
+using Gardening.Core.Interfaces;
 using Gardening.Infrastructure.Data;
-using Gardening.Infrastructure.Repositories.Interfaces;
 using LanguageExt;
 using Microsoft.EntityFrameworkCore;
 
