@@ -1,7 +1,7 @@
 using Asp.Versioning;
+using Gardening.Core.Interfaces;
 using Gardening.Infrastructure.Data;
 using Gardening.Infrastructure.Repositories;
-using Gardening.Infrastructure.Repositories.Interfaces;
 using Gardening.Services.Services;
 using Gardening.Services.Services.Interfaces;
 using GardeningApi.Extensions;
