@@ -1,10 +1,12 @@
-﻿using Gardening.Core.Entities;
+﻿using Asp.Versioning;
+using Gardening.Core.Entities;
 using Gardening.Services.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GardeningApi.Controllers
 {
     [ApiController]
+    [ApiVersion(1.0)]
     [Route("api/[controller]")]
     public class PlantController(IPlantService plantService) : ControllerBase
     {
