@@ -1,5 +1,5 @@
 ﻿using Asp.Versioning;
-using Gardening.Core.Entities;
+using Gardening.Services.DTOs.Plant.Post;
 using Gardening.Services.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,10 +11,10 @@ namespace GardeningApi.Controllers._2._0
     public class PlantController(IPlantService plantService) : ControllerBase
     {
         [HttpPost]
-        public async Task<ActionResult<PostPlantResponseDto>> Post(PostPlantRequestDto plant)
+        public async Task<ActionResult<PostPlantResponse>> Post(PostPlantRequest request)
         {
-            var result = await plantService.CreatePlantAsync(plant);
-            return result.Match<ActionResult>(s => Ok(s), f => BadRequest(f.Message));
+            var result = await plantService.CreatePlantAsync(request);
+            return result.Match<ActionResult>(Ok, f => BadRequest(f.Message));
         }
     }
 }

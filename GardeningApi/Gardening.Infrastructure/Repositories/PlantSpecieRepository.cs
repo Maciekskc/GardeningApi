@@ -18,6 +18,11 @@ namespace Gardening.Infrastructure.Repositories
             return await context.PlantSpecies.FindAsync(id);
         }
 
+        public async Task<Option<PlantSpecie>> GetPlantSpecieByNameAsync(string name)
+        {
+            return await context.PlantSpecies.FirstOrDefaultAsync(x => x.Name == name);
+        }
+
         public async Task<Option<PlantSpecie>> CreatePlantSpecieAsync(PlantSpecie plantSpecie)
         {
             context.PlantSpecies.Add(plantSpecie);

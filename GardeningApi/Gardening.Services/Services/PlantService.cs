@@ -1,11 +1,13 @@
 ﻿using Gardening.Core.Entities;
 using Gardening.Core.Interfaces;
+using Gardening.Services.DTOs.Plant.Post;
+using Gardening.Services.Mappings;
 using Gardening.Services.Services.Interfaces;
 using LanguageExt.Common;
 
 namespace Gardening.Services.Services
 {
-    public class PlantService(IPlantRepository repository) : IPlantService
+    public class PlantService(IPlantRepository repository, IPlantSpecieService plantSpecieService) : IPlantService
     {
         public async Task<IEnumerable<Plant>> GetAllPlantsAsync()
         {
@@ -25,6 +27,29 @@ namespace Gardening.Services.Services
             var result = await repository.CreatePlantAsync(plant);
             return result.Match(obj => new Result<Plant>(obj),
                 () => new Result<Plant>(new Exception("Object was not created")));
+        }
+
+        public async Task<Result<PostPlantResponse>> CreatePlantAsync(PostPlantRequest request)
+        {
+            var plantSpecie = await plantSpecieService.GetPlantSpecieByNameAsync(request.Specie);
+
+            if (plantSpecie.IsFaulted)
+            {
+                return new Result<PostPlantResponse>(new Exception("Not existing Plant Specie"));
+            }
+
+            var plant = PlantMapper.PostPlantRequestToPlant(request);
+
+            if (plant.PlantingDate == default)
+            {
+                plant.PlantingDate = DateTime.UtcNow;
+            }
+
+            plantSpecie.IfSucc(result => plant.PlantSpecie = result);
+
+            var result = await repository.CreatePlantAsync(plant);
+            return result.Match(obj => new Result<PostPlantResponse>(PlantMapper.PlantToPostPlantResponse(obj)),
+                () => new Result<PostPlantResponse>(new Exception("Object was not created")));
         }
 
         public async Task<Result<Plant>> UpdatePlantAsync(int id, Plant plant)

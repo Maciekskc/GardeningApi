@@ -12,6 +12,14 @@ namespace Gardening.Services.Services
             return await repository.GetAllPlantSpeciesAsync();
         }
 
+        public async Task<Result<PlantSpecie>> GetPlantSpecieByNameAsync(string name)
+        {
+            var result = await repository.GetPlantSpecieByNameAsync(name);
+            return result.Match(
+                obj => new Result<PlantSpecie>(obj),
+                () => new Result<PlantSpecie>(new Exception("The object does not exist")));
+        }
+
         public async Task<Result<PlantSpecie>> GetPlantSpecieByIdAsync(int id)
         {
             var result = await repository.GetPlantSpecieByIdAsync(id);

@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="LanguageExt.Core" Version="4.4.9" />
+    <PackageReference Include="Riok.Mapperly" Version="3.6.0" />
   </ItemGroup>
 
   <ItemGroup>

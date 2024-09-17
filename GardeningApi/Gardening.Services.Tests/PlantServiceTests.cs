@@ -6,6 +6,7 @@ using Gardening.Infrastructure.Repositories;
 using Gardening.Services.Services;
 using Gardening.Services.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 
 namespace Gardening.Services.Tests
 {
@@ -13,6 +14,7 @@ namespace Gardening.Services.Tests
     {
         private readonly PlantService _plantService;
         private readonly PlantAppDbContext _context;
+        private readonly Mock<IPlantSpecieService> _plantSpecieServiceMock;
 
         public PlantServiceTests()
         {
@@ -22,7 +24,10 @@ namespace Gardening.Services.Tests
 
             _context = new PlantAppDbContext(options);
             var repository = new PlantRepository(_context);
-            _plantService = new PlantService(repository);
+
+            _plantSpecieServiceMock = new Mock<IPlantSpecieService>();
+
+            _plantService = new PlantService(repository, _plantSpecieServiceMock.Object);
         }
 
         [Fact]
