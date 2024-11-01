@@ -1,10 +1,12 @@
-﻿using System.Text.Json;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace GardeningApi.Extensions;
 
+[ExcludeFromCodeCoverage]
 public class SwaggerDefaultValues : IOperationFilter
 {
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
