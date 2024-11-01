@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using Gardening.Services.DTOs.Plant.Post;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Gardening.Services.Tests.Validators
 {
