@@ -1,61 +1,47 @@
-﻿using Gardening.Core.Entities;
+﻿using Asp.Versioning;
+using Gardening.Core.Entities;
 using Gardening.Services.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GardeningApi.Controllers
 {
     [ApiController]
+    [ApiVersion(1.0)]
     [Route("api/[controller]")]
-    public class PlantController : ControllerBase
+    public class PlantController(IPlantService plantService) : ControllerBase
     {
-        private readonly IPlantService _plantService;
-
-        public PlantController(IPlantService plantService)
-        {
-            _plantService = plantService;
-        }
-
         [HttpGet]
         public async Task<IEnumerable<Plant>> Get()
         {
-            return await _plantService.GetAllPlantsAsync();
+            return await plantService.GetAllPlantsAsync();
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Plant>> Get(int id)
         {
-            var plant = await _plantService.GetPlantByIdAsync(id);
-            if (plant == null)
-            {
-                return NotFound();
-            }
-            return plant;
+            var result = await plantService.GetPlantByIdAsync(id);
+            return result.Match<ActionResult>(s => Ok(s), f => NotFound(f.Message));
         }
 
         [HttpPost]
         public async Task<ActionResult<Plant>> Post(Plant plant)
         {
-            var createdPlant = await _plantService.CreatePlantAsync(plant);
-            return CreatedAtAction(nameof(Get), new { id = createdPlant.Id }, createdPlant);
+            var result = await plantService.CreatePlantAsync(plant);
+            return result.Match<ActionResult>(s => Ok(s), f => BadRequest(f.Message));
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, Plant plant)
         {
-            if (id != plant.Id)
-            {
-                return BadRequest();
-            }
-
-            await _plantService.UpdatePlantAsync(plant);
-            return NoContent();
+            var result = await plantService.UpdatePlantAsync(id, plant);
+            return result.Match<IActionResult>(s => Ok(s), f => BadRequest(f.Message));
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _plantService.DeletePlantAsync(id);
-            return NoContent();
+            var result = await plantService.DeletePlantAsync(id);
+            return result.Match<IActionResult>(s => NoContent(), f => BadRequest(f.Message));
         }
     }
 }

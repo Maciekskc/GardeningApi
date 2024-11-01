@@ -3,7 +3,6 @@ using Gardening.Core.Entities;
 using Gardening.Core.Enums;
 using Gardening.Infrastructure.Data;
 using Gardening.Infrastructure.Repositories;
-using Gardening.Infrastructure.Repositories.Interfaces;
 using Gardening.Services.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,10 +30,13 @@ namespace Gardening.Services.Tests
             var plantSpecie = new PlantSpecie { Name = "Tomato", Type = PlantType.Vegetable };
 
             var result = await _plantSpecieService.CreatePlantSpecieAsync(plantSpecie);
-
-            result.Should().NotBeNull();
-            result!.Id.Should().BeGreaterThan(0);
-            result!.Name.Should().Be("Tomato");
+            
+            result.IsSuccess.Should().BeTrue();
+            result.IfSucc(p =>
+            {
+                p.Id.Should().BeGreaterThan(0);
+                p.Name.Should().Be("Tomato");
+            });
         }
 
         [Fact]
@@ -46,8 +48,12 @@ namespace Gardening.Services.Tests
 
             var result = await _plantSpecieService.GetPlantSpecieByIdAsync(plantSpecie.Id);
 
-            result.Should().NotBeNull();
-            result!.Name.Should().Be("Rose");
+            result.IsSuccess.Should().BeTrue();
+            result.IfSucc(p =>
+            {
+                p.Should().NotBeNull();
+                p.Name.Should().Be("Rose");
+            });
         }
 
         [Fact]
@@ -55,7 +61,11 @@ namespace Gardening.Services.Tests
         {
             var result = await _plantSpecieService.GetPlantSpecieByIdAsync(999);
 
-            result.Should().BeNull();
+            result.IsFaulted.Should().BeTrue();
+            result.IfFail(f =>
+            {
+                f.Message.Should().Be("The object does not exist");
+            });
         }
 
         [Fact]
@@ -64,8 +74,8 @@ namespace Gardening.Services.Tests
             // Arrange
             var plantSpacieList = new List<PlantSpecie>()
             {
-                new PlantSpecie { Name = "Mint", Type = PlantType.Herb },
-                new PlantSpecie { Name = "Paper Mint", Type = PlantType.Herb }
+                new() { Name = "Mint", Type = PlantType.Herb },
+                new() { Name = "Paper Mint", Type = PlantType.Herb }
             };
             await _context.PlantSpecies.AddRangeAsync(plantSpacieList);
             await _context.SaveChangesAsync();
@@ -86,10 +96,50 @@ namespace Gardening.Services.Tests
             await _context.SaveChangesAsync();
 
             plantSpecie.Name = "Updated Lettuce";
-            var result = await _plantSpecieService.UpdatePlantSpecieAsync(plantSpecie);
+            var result = await _plantSpecieService.UpdatePlantSpecieAsync(plantSpecie.Id,plantSpecie);
 
-            result.Should().NotBeNull();
-            result!.Name.Should().Be("Updated Lettuce");
+            result.IsSuccess.Should().BeTrue();
+            result.IfSucc(p =>
+            {
+                p.Should().NotBeNull();
+                p.Name.Should().Be("Updated Lettuce");
+            });
+        }
+
+        [Theory]
+        [InlineData(default,1, "AnyName", PlantType.Flower, "Invalid id")]
+        [InlineData(-1,1, "AnyName", PlantType.Flower, "Invalid id")]
+        [InlineData(2,1, "AnyName", PlantType.Flower, "You cannot change record Id")]
+        public async Task UpdatePlantSpecieAsync_ShouldReturnValidationError_WhenRequestObjectIsInvalid(int id, int updatedObjectId, string name, PlantType type, string expectedValidationErrorMessage)
+        {
+            var initialPlantSpecie = new PlantSpecie { Id = 1, Name = "DefaultName", Type = PlantType.Tree};
+            await _context.PlantSpecies.AddAsync(initialPlantSpecie);
+            await _context.SaveChangesAsync();
+
+            var updatedPlantSpecie = new PlantSpecie { Id = updatedObjectId, Name = name, Type = type};
+            var result = await _plantSpecieService.UpdatePlantSpecieAsync(id, updatedPlantSpecie);
+
+            result.IsSuccess.Should().BeFalse();
+            result.IfFail(p =>
+            {
+                p.Should().NotBeNull();
+                p.Message.Should().Be(expectedValidationErrorMessage);
+            });
+        }
+
+        [Fact]
+        public async Task UpdatePlantSpecieAsync_ShouldReturnNotFoundException_WhenNotExist()
+        {
+            var plantSpecie = new PlantSpecie { Id = 1, Name = "Lettuce", Type = PlantType.Vegetable };
+
+            var result = await _plantSpecieService.UpdatePlantSpecieAsync(plantSpecie.Id, plantSpecie);
+
+            result.IsSuccess.Should().BeFalse();
+            result.IfFail(p =>
+            {
+                p.Should().NotBeNull();
+                p.Message.Should().Be("Plant Specie not found in the database, nothing to update");
+            });
         }
 
         [Fact]

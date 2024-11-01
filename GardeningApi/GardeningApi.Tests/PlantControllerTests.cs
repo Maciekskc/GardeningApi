@@ -2,6 +2,7 @@
 using Gardening.Core.Entities;
 using Gardening.Services.Services.Interfaces;
 using GardeningApi.Controllers;
+using LanguageExt.Common;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
@@ -43,7 +44,9 @@ namespace GardeningApi.Tests
 
             var result = await _plantController.Get(1);
 
-            result.Value.Should().Be(plant);
+            var okResult = result.Result as OkObjectResult;
+            okResult.Should().NotBeNull();
+            okResult!.Value.Should().Be(plant);
         }
 
         [Fact]
@@ -52,7 +55,7 @@ namespace GardeningApi.Tests
             var result = await _plantController.Get(-1);
 
             result.Value.Should().Be(null);
-            result.Result.Should().BeOfType<NotFoundResult>();
+            result.Result.Should().BeOfType<NotFoundObjectResult>();
         }
 
         [Fact]
@@ -64,7 +67,7 @@ namespace GardeningApi.Tests
 
             var result = await _plantController.Post(plant);
 
-            result.Result.Should().BeOfType<CreatedAtActionResult>();
+            result.Result.Should().BeOfType<OkObjectResult>();
         }
 
         [Fact]
@@ -72,11 +75,12 @@ namespace GardeningApi.Tests
         {
             var plant = new Plant { Id = 1, Name = "Updated Rose", PlantingDate = DateTime.UtcNow, PlantSpecieId = 1 };
 
-            _plantServiceMock.Setup(service => service.UpdatePlantAsync(plant)).ReturnsAsync(plant);
+            _plantServiceMock.Setup(service => service.UpdatePlantAsync(plant.Id, plant))
+                .ReturnsAsync(new Result<Plant>(plant));
 
             var result = await _plantController.Put(1, plant);
 
-            result.Should().BeOfType<NoContentResult>();
+            result.Should().BeOfType<OkObjectResult>();
         }
 
         [Fact]
@@ -87,13 +91,14 @@ namespace GardeningApi.Tests
 
             var result = await _plantController.Put(plantId, plant);
 
-            result.Should().BeOfType<BadRequestResult>();
+            result.Should().BeOfType<BadRequestObjectResult>();
         }
 
         [Fact]
         public async Task Delete_ShouldRemovePlant()
         {
-            _plantServiceMock.Setup(service => service.DeletePlantAsync(1)).Returns(Task.CompletedTask);
+            _plantServiceMock.Setup(service => service.DeletePlantAsync(1))
+                .Returns(Task.FromResult(new Result<int>(1)));
 
             var result = await _plantController.Delete(1);
 

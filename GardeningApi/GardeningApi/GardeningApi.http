@@ -1,1 +1,22 @@
-@GardeningApi_HostAddress = http://localhost:5264
+@GardeningApi_HostAddress = https://localhost:44321
+
+GET {{GardeningApi_HostAddress}}/api/PlantSpecie?api-version=1.0
+
+###
+
+POST {{GardeningApi_HostAddress}}/api/PlantSpecie?api-version=1.0
+Content-Type: application/json
+{
+  "id": 1,
+  "name": "Mint",
+  "type": 4
+}
+###
+
+POST {{GardeningApi_HostAddress}}/api/Plant?api-version=2.0
+Content-Type: application/json
+{
+  "name": "My newly planted mint",
+  "specie": "Mint"
+}
+###

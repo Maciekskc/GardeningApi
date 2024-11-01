@@ -1,41 +1,76 @@
 ﻿using Gardening.Core.Entities;
-using Gardening.Infrastructure.Repositories.Interfaces;
+using Gardening.Core.Interfaces;
 using Gardening.Services.Services.Interfaces;
+using LanguageExt.Common;
 
 namespace Gardening.Services.Services
 {
-    public class PlantSpecieService : IPlantSpecieService
+    public class PlantSpecieService(IPlantSpecieRepository repository) : IPlantSpecieService
     {
-        private readonly IPlantSpecieRepository _repository;
-
-        public PlantSpecieService(IPlantSpecieRepository repository)
-        {
-            _repository = repository;
-        }
-
         public async Task<IEnumerable<PlantSpecie>> GetAllPlantSpeciesAsync()
         {
-            return await _repository.GetAllPlantSpeciesAsync();
+            return await repository.GetAllPlantSpeciesAsync();
         }
 
-        public async Task<PlantSpecie?> GetPlantSpecieByIdAsync(int id)
+        public async Task<Result<PlantSpecie>> GetPlantSpecieByNameAsync(string name)
         {
-            return await _repository.GetPlantSpecieByIdAsync(id);
+            var result = await repository.GetPlantSpecieByNameAsync(name);
+            return result.Match(
+                obj => new Result<PlantSpecie>(obj),
+                () => new Result<PlantSpecie>(new Exception("The object does not exist")));
         }
 
-        public async Task<PlantSpecie> CreatePlantSpecieAsync(PlantSpecie plantSpecie)
+        public async Task<Result<PlantSpecie>> GetPlantSpecieByIdAsync(int id)
         {
-            return await _repository.CreatePlantSpecieAsync(plantSpecie);
+            var result = await repository.GetPlantSpecieByIdAsync(id);
+            return result.Match(
+                obj => new Result<PlantSpecie>(obj),
+                () => new Result<PlantSpecie>(new Exception("The object does not exist")));
         }
 
-        public async Task<PlantSpecie?> UpdatePlantSpecieAsync(PlantSpecie plantSpecie)
+
+        public async Task<Result<PlantSpecie>> CreatePlantSpecieAsync(PlantSpecie plantSpecie)
         {
-            return await _repository.UpdatePlantSpecieAsync(plantSpecie);
+            var result = await repository.CreatePlantSpecieAsync(plantSpecie);
+            return result.Match(obj => new Result<PlantSpecie>(obj),
+                () => new Result<PlantSpecie>(new Exception("Object was not created")));
         }
 
-        public async Task DeletePlantSpecieAsync(int id)
+        public async Task<Result<PlantSpecie>> UpdatePlantSpecieAsync(int id, PlantSpecie plantSpecie)
         {
-            await _repository.DeletePlantSpecieAsync(id);
+            if (id == default || id < 0)
+            {
+                return new Result<PlantSpecie>(new Exception("Invalid id"));
+            }
+
+            if (id != plantSpecie.Id)
+            {
+                return new Result<PlantSpecie>(new Exception("You cannot change record Id"));
+            }
+
+            var existingPlant = await repository.GetPlantSpecieByIdAsync(id);
+            if (existingPlant.IsNone)
+            {
+                return new Result<PlantSpecie>(new Exception("Plant Specie not found in the database, nothing to update"));
+            }
+
+            var result = await repository.UpdatePlantSpecieAsync(plantSpecie);
+            return result.Match(obj => new Result<PlantSpecie>(obj),
+                () => new Result<PlantSpecie>(new Exception("Object was not updated")));
+        }
+
+        public async Task<Result<int>> DeletePlantSpecieAsync(int id)
+        {
+            var repositorySearchResult = await repository.GetPlantSpecieByIdAsync(id);
+            return await repositorySearchResult.Match<Task<Result<int>>>(
+                async plantSpecie =>
+                {
+                    var deleteResult = await repository.DeletePlantSpecieAsync(plantSpecie);
+                    return deleteResult.Match(
+                        obj => new Result<int>(obj),
+                        () => new Result<int>(new Exception("Object was not removed")));
+                }, () => Task.FromResult(new Result<int>(new Exception("Plant species not found")))
+            );
         }
     }
 }

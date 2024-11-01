@@ -1,42 +1,92 @@
-﻿using System.Net.Mime;
-using Gardening.Core.Entities;
-using Gardening.Infrastructure.Repositories.Interfaces;
+﻿using Gardening.Core.Entities;
+using Gardening.Core.Interfaces;
+using Gardening.Services.DTOs.Plant.Post;
+using Gardening.Services.Mappings;
 using Gardening.Services.Services.Interfaces;
+using LanguageExt.Common;
 
 namespace Gardening.Services.Services
 {
-    public class PlantService : IPlantService
+    public class PlantService(IPlantRepository repository, IPlantSpecieService plantSpecieService) : IPlantService
     {
-        private readonly IPlantRepository _repository;
-
-        public PlantService(IPlantRepository repository)
-        {
-            _repository = repository;
-        }
-
         public async Task<IEnumerable<Plant>> GetAllPlantsAsync()
         {
-            return await _repository.GetAllPlantsAsync();
+            return await repository.GetAllPlantsAsync();
         }
 
-        public async Task<Plant?> GetPlantByIdAsync(int id)
+        public async Task<Result<Plant>> GetPlantByIdAsync(int id)
         {
-            return await _repository.GetPlantByIdAsync(id);
+            var result = await repository.GetPlantByIdAsync(id);
+            return result.Match(
+                obj => new Result<Plant>(obj),
+                () => new Result<Plant>(new Exception("The object does not exist")));
         }
 
-        public async Task<Plant> CreatePlantAsync(Plant plant)
+        public async Task<Result<Plant>> CreatePlantAsync(Plant plant)
         {
-            return await _repository.CreatePlantAsync(plant);
+            var result = await repository.CreatePlantAsync(plant);
+            return result.Match(obj => new Result<Plant>(obj),
+                () => new Result<Plant>(new Exception("Object was not created")));
         }
 
-        public async Task<Plant?> UpdatePlantAsync(Plant plant)
+        public async Task<Result<PostPlantResponse>> CreatePlantAsync(PostPlantRequest request)
         {
-            return await _repository.UpdatePlantAsync(plant) ?? throw new Exception("Plant not found");
+            var plantSpecie = await plantSpecieService.GetPlantSpecieByNameAsync(request.Specie);
+
+            if (plantSpecie.IsFaulted)
+            {
+                return new Result<PostPlantResponse>(new Exception("Not existing Plant Specie"));
+            }
+
+            var plant = PlantMapper.PostPlantRequestToPlant(request);
+
+            if (plant.PlantingDate == default)
+            {
+                plant.PlantingDate = DateTime.UtcNow;
+            }
+
+            plantSpecie.IfSucc(result => plant.PlantSpecie = result);
+
+            var result = await repository.CreatePlantAsync(plant);
+            return result.Match(obj => new Result<PostPlantResponse>(PlantMapper.PlantToPostPlantResponse(obj)),
+                () => new Result<PostPlantResponse>(new Exception("Object was not created")));
         }
 
-        public async Task DeletePlantAsync(int id)
+        public async Task<Result<Plant>> UpdatePlantAsync(int id, Plant plant)
         {
-            await _repository.DeletePlantAsync(id);
+            if (id == default || id < 0)
+            {
+                return new Result<Plant>(new Exception("Invalid id"));
+            }
+
+            if (id != plant.Id)
+            {
+                return new Result<Plant>(new Exception("You cannot change record Id"));
+            }
+
+            var existingPlant = await repository.GetPlantByIdAsync(id);
+            if (existingPlant.IsNone)
+            {
+                return new Result<Plant>(new Exception("Plant not found in the database, nothing to update"));
+            }
+
+            var result = await repository.UpdatePlantAsync(plant);
+            return result.Match(obj => new Result<Plant>(obj),
+                () => new Result<Plant>(new Exception("Object was not updated")));
+        }
+
+        public async Task<Result<int>> DeletePlantAsync(int id)
+        {
+            var repositorySearchResult = await repository.GetPlantByIdAsync(id);
+            return await repositorySearchResult.Match<Task<Result<int>>>(
+                async plant =>
+                {
+                    var deleteResult = await repository.DeletePlantAsync(plant);
+                    return deleteResult.Match(
+                        obj => new Result<int>(obj),
+                        () => new Result<int>(new Exception("Object was not removed")));
+                }, () => Task.FromResult(new Result<int>(new Exception("Plant not found")))
+            );
         }
     }
 }
