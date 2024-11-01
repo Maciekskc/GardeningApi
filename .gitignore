@@ -79,3 +79,4 @@ _[Ss]cripts
 *.ncrunchsolution
 *.dot[Cc]over
 /.vs/EncryptAPI
+/GardeningApi/CoverageReport

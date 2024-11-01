@@ -1,51 +1,41 @@
 ﻿using Gardening.Core.Entities;
+using Gardening.Core.Interfaces;
 using Gardening.Infrastructure.Data;
-using Gardening.Infrastructure.Repositories.Interfaces;
+using LanguageExt;
 using Microsoft.EntityFrameworkCore;
 
 namespace Gardening.Infrastructure.Repositories
 {
-    public class PlantRepository : IPlantRepository
+    public class PlantRepository(PlantAppDbContext context) : IPlantRepository
     {
-        private readonly PlantAppDbContext _context;
-
-        public PlantRepository(PlantAppDbContext context)
-        {
-            _context = context;
-        }
-
         public async Task<IEnumerable<Plant>> GetAllPlantsAsync()
         {
-            return await _context.Plants.ToListAsync();
+            return await context.Plants.ToListAsync();
         }
 
-        public async Task<Plant?> GetPlantByIdAsync(int id)
+        public async Task<Option<Plant>> GetPlantByIdAsync(int id)
         {
-            return await _context.Plants.FirstOrDefaultAsync(p => p.Id == id);
+            return await context.Plants.FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public async Task<Plant> CreatePlantAsync(Plant plant)
+        public async Task<Option<Plant>> CreatePlantAsync(Plant plant)
         {
-            _context.Plants.Add(plant);
-            await _context.SaveChangesAsync();
+            context.Plants.Add(plant);
+            await context.SaveChangesAsync();
             return plant;
         }
 
-        public async Task<Plant?> UpdatePlantAsync(Plant plant)
+        public async Task<Option<Plant>> UpdatePlantAsync(Plant plant)
         {
-            _context.Entry(plant).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            context.Entry(plant).State = EntityState.Modified;
+            await context.SaveChangesAsync();
             return plant;
         }
 
-        public async Task DeletePlantAsync(int id)
+        public async Task<Option<int>> DeletePlantAsync(Plant plant)
         {
-            var plant = await _context.Plants.FindAsync(id);
-            if (plant != null)
-            {
-                _context.Plants.Remove(plant);
-                await _context.SaveChangesAsync();
-            }
+            context.Plants.Remove(plant);
+            return await context.SaveChangesAsync();
         }
     }
 }

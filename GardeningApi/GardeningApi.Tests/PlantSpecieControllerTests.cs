@@ -3,6 +3,7 @@ using Gardening.Core.Entities;
 using Gardening.Core.Enums;
 using Gardening.Services.Services.Interfaces;
 using GardeningApi.Controllers;
+using LanguageExt.Common;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
@@ -40,11 +41,14 @@ namespace GardeningApi.Tests
         {
             var plantSpecie = new PlantSpecie { Id = 1, Name = "Rose", Type = PlantType.Flower };
 
-            _plantSpecieServiceMock.Setup(service => service.GetPlantSpecieByIdAsync(1)).ReturnsAsync(plantSpecie);
+            _plantSpecieServiceMock.Setup(service => service.GetPlantSpecieByIdAsync(1))
+                .ReturnsAsync(new Result<PlantSpecie>(plantSpecie));
 
             var result = await _plantSpecieController.Get(1);
 
-            result.Value.Should().Be(plantSpecie);
+            var okResult = result.Result as OkObjectResult;
+            okResult.Should().NotBeNull();
+            okResult!.Value.Should().Be(plantSpecie);
         }
 
         [Fact]
@@ -52,8 +56,8 @@ namespace GardeningApi.Tests
         {
             var result = await _plantSpecieController.Get(-1);
 
-            result.Value.Should().Be(null);
-            result.Result.Should().BeOfType(typeof(NotFoundResult));
+
+            result.Result.Should().BeOfType<NotFoundObjectResult>();
         }
 
         [Fact]
@@ -61,11 +65,12 @@ namespace GardeningApi.Tests
         {
             var plantSpecie = new PlantSpecie { Id = 1, Name = "Rose", Type = PlantType.Flower };
 
-            _plantSpecieServiceMock.Setup(service => service.CreatePlantSpecieAsync(plantSpecie)).ReturnsAsync(plantSpecie);
+            _plantSpecieServiceMock.Setup(service => service.CreatePlantSpecieAsync(plantSpecie))
+                .ReturnsAsync(plantSpecie);
 
             var result = await _plantSpecieController.Post(plantSpecie);
 
-            result.Result.Should().BeOfType<CreatedAtActionResult>();
+            result.Result.Should().BeOfType<OkObjectResult>();
         }
 
         [Fact]
@@ -73,28 +78,30 @@ namespace GardeningApi.Tests
         {
             var plantSpecie = new PlantSpecie { Id = 1, Name = "Updated Rose", Type = PlantType.Flower };
 
-            _plantSpecieServiceMock.Setup(service => service.UpdatePlantSpecieAsync(plantSpecie)).ReturnsAsync(plantSpecie);
+            _plantSpecieServiceMock.Setup(service => service.UpdatePlantSpecieAsync(plantSpecie.Id, plantSpecie))
+                .ReturnsAsync(new Result<PlantSpecie>(plantSpecie));
 
             var result = await _plantSpecieController.Put(1, plantSpecie);
 
-            result.Should().BeOfType<NoContentResult>();
+            result.Should().BeOfType<OkObjectResult>();
         }
 
         [Fact]
-        public async Task Put_ShouldThrowBadRequest_WhenUpdatingPlantSpacieWithDifferentIdThanParameter()
+        public async Task Put_ShouldThrowBadRequest_WhenUpdatingPlantSpecieWithDifferentIdThanParameter()
         {
             var plantSpacieId = 0;
             var plantSpacie = new PlantSpecie { Id = 1, Name = "Updated Rose", Type = PlantType.Flower };
 
             var result = await _plantSpecieController.Put(plantSpacieId, plantSpacie);
 
-            result.Should().BeOfType<BadRequestResult>();
+            result.Should().BeOfType<BadRequestObjectResult>();
         }
 
         [Fact]
         public async Task Delete_ShouldRemovePlantSpecie()
         {
-            _plantSpecieServiceMock.Setup(service => service.DeletePlantSpecieAsync(1)).Returns(Task.CompletedTask);
+            _plantSpecieServiceMock.Setup(service => service.DeletePlantSpecieAsync(1))
+                .Returns(Task.FromResult(new Result<int>(1)));
 
             var result = await _plantSpecieController.Delete(1);
 

@@ -44,14 +44,19 @@ namespace Gardening.Infrastructure.Tests
             // Arrange
             var plantSpecie = new PlantSpecie { Name = "Rose", Type = PlantType.Flower };
             await _context.PlantSpecies.AddAsync(plantSpecie);
-            await _context.SaveChangesAsync();
+            var saveChangesValue = await _context.SaveChangesAsync();
 
             // Act
             var result = await _plantSpecieRepository.GetPlantSpecieByIdAsync(plantSpecie.Id);
 
             // Assert
-            result.Should().NotBeNull();
-            result!.Name.Should().Be("Rose");
+            saveChangesValue.Should().BeGreaterThan(0);
+            result.IsSome.Should().BeTrue();
+            result.IfSome(p =>
+            {
+                p.Should().NotBeNull();
+                p.Name.Should().Be("Rose");
+            });
         }
 
         [Fact]
@@ -81,7 +86,7 @@ namespace Gardening.Infrastructure.Tests
             var result = await _plantSpecieRepository.GetPlantSpecieByIdAsync(999);
 
             // Assert
-            result.Should().BeNull();
+            result.IsNone.Should().BeTrue();
         }
 
         [Fact]
@@ -116,7 +121,7 @@ namespace Gardening.Infrastructure.Tests
             result.Should().Be(plantSpecie);
 
             _context.Entry(plantSpecie).State = EntityState.Modified;
-            await _plantSpecieRepository.DeletePlantSpecieAsync(plantSpecie.Id);
+            await _plantSpecieRepository.DeletePlantSpecieAsync(plantSpecie);
             await _context.SaveChangesAsync();
 
             // Assert

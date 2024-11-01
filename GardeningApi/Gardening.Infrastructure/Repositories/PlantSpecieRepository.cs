@@ -1,51 +1,46 @@
 ﻿using Gardening.Core.Entities;
+using Gardening.Core.Interfaces;
 using Gardening.Infrastructure.Data;
-using Gardening.Infrastructure.Repositories.Interfaces;
+using LanguageExt;
 using Microsoft.EntityFrameworkCore;
 
 namespace Gardening.Infrastructure.Repositories
 {
-    public class PlantSpecieRepository : IPlantSpecieRepository
+    public class PlantSpecieRepository(PlantAppDbContext context) : IPlantSpecieRepository
     {
-        private readonly PlantAppDbContext _context;
-
-        public PlantSpecieRepository(PlantAppDbContext context)
-        {
-            _context = context;
-        }
-
         public async Task<IEnumerable<PlantSpecie>> GetAllPlantSpeciesAsync()
         {
-            return await _context.PlantSpecies.ToListAsync();
+            return await context.PlantSpecies.ToListAsync();
         }
 
-        public async Task<PlantSpecie?> GetPlantSpecieByIdAsync(int id)
+        public async Task<Option<PlantSpecie>> GetPlantSpecieByIdAsync(int id)
         {
-            return await _context.PlantSpecies.FindAsync(id);
+            return await context.PlantSpecies.FindAsync(id);
         }
 
-        public async Task<PlantSpecie> CreatePlantSpecieAsync(PlantSpecie plantSpecie)
+        public async Task<Option<PlantSpecie>> GetPlantSpecieByNameAsync(string name)
         {
-            _context.PlantSpecies.Add(plantSpecie);
-            await _context.SaveChangesAsync();
+            return await context.PlantSpecies.FirstOrDefaultAsync(x => x.Name == name);
+        }
+
+        public async Task<Option<PlantSpecie>> CreatePlantSpecieAsync(PlantSpecie plantSpecie)
+        {
+            context.PlantSpecies.Add(plantSpecie);
+            await context.SaveChangesAsync();
             return plantSpecie;
         }
 
-        public async Task<PlantSpecie?> UpdatePlantSpecieAsync(PlantSpecie plantSpecie)
+        public async Task<Option<PlantSpecie>> UpdatePlantSpecieAsync(PlantSpecie plantSpecie)
         {
-            _context.Entry(plantSpecie).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            context.PlantSpecies.Update(plantSpecie);
+            await context.SaveChangesAsync();
             return plantSpecie;
         }
 
-        public async Task DeletePlantSpecieAsync(int id)
+        public async Task<Option<int>> DeletePlantSpecieAsync(PlantSpecie plantSpacie)
         {
-            var plantSpecie = await _context.PlantSpecies.FindAsync(id);
-            if (plantSpecie != null)
-            {
-                _context.PlantSpecies.Remove(plantSpecie);
-                await _context.SaveChangesAsync();
-            }
+            context.PlantSpecies.Remove(plantSpacie);
+            return await context.SaveChangesAsync();
         }
     }
 }
