@@ -11,7 +11,11 @@ namespace Gardening.Services.Tests.Validators
         public PostPlantRequestValidatorTests()
         {
             _sut = new PostPlantRequestValidator();
-            _baseRequest = new PostPlantRequest("Mint","Herb"); 
+            _baseRequest = new PostPlantRequest()
+            {
+                Name = "Mint",
+                Specie = "Herb"
+            }; 
         }
 
         [Fact]
