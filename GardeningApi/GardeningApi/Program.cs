@@ -1,7 +1,9 @@
 using Asp.Versioning;
+using FluentValidation;
 using Gardening.Core.Interfaces;
 using Gardening.Infrastructure.Data;
 using Gardening.Infrastructure.Repositories;
+using Gardening.Services.DTOs.Plant.Post;
 using Gardening.Services.Services;
 using Gardening.Services.Services.Interfaces;
 using GardeningApi.Extensions;
@@ -14,6 +16,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddDbContext<PlantAppDbContext>(options =>
     options.UseInMemoryDatabase("PlantDb"));
+
+builder.Services.AddScoped<IValidator<PostPlantRequest>, PostPlantRequestValidator>();
 
 builder.Services.AddScoped<IPlantService, PlantService>();
 builder.Services.AddScoped<IPlantSpecieService, PlantSpecieService>();

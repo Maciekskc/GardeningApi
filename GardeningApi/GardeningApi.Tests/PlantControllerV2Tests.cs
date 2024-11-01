@@ -1,9 +1,7 @@
 ﻿using FluentAssertions;
-using Gardening.Core.Entities;
 using Gardening.Services.DTOs.Plant.Post;
 using Gardening.Services.Services.Interfaces;
 using GardeningApi.Controllers._2._0;
-using LanguageExt.Common;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
@@ -17,10 +15,9 @@ namespace GardeningApi.Tests
         public PlantControllerV2Tests()
         {
             _plantServiceMock = new Mock<IPlantService>();
-            _plantController = new PlantController(_plantServiceMock.Object);
+            _plantController = new PlantController(_plantServiceMock.Object, new PostPlantRequestValidator());
         }
 
-        
         [Fact]
         public async Task Post_ShouldCreatePlant()
         {
